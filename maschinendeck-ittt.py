@@ -40,13 +40,21 @@ class Auto():
           self.state = True
           if not msg.retain:
             if isSunSettingInOrSet(timedelta(hours=1)):
-              logger.debug("sunset, switch on lamp")
+              logger.debug("sun is set, switch on lamp")
               client.publish("/maschinendeck/esper/1bfe7f/socket/set", "1")
+            else:
+              logger.debug("sun is not set")
+          else:
+            logger.debug("message was retained, do not act on it")
        elif msg.payload == "closed":
           self.state = False
           if not msg.retain:
+            logger.debug("disabling lamp")
             client.publish("/maschinendeck/esper/1bfe7f/socket/set", "0")
+          else:
+            logger.debug("message was retained, do not act on it")
        else:
+          logger.warning("unable to parse raumstatus '%s', setting state to unknown"%msg.payload)
           self.state = None
 
   def on_connect(self, client, userdata, flags, rc):
@@ -58,7 +66,6 @@ class Auto():
   def mqttHeartbeat(self, enqueue=True):
     if(FOREVER and enqueue):
       self.s.enter(MQTT_HEARTBEAT_INTERVAL_SECONDS, 0, self.mqttHeartbeat, ())
-    logging.debug("sending MQTT Heartbeat for sonoffs")
     self.client.publish("/maschinendeck/esper/heartbeat")
     self.client.publish("/members/ranlvor/esper/heartbeat")
   
