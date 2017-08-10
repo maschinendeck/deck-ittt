@@ -36,7 +36,7 @@ class Auto():
   def on_message(self, client, userdata, msg):
     logging.debug("got on topic %s message %s" % (msg.topic, msg.payload));
     if msg.topic == "/maschinendeck/raum/status":
-       if msg.payload == "open":
+       if msg.payload == b"open":
           self.state = True
           if not msg.retain:
             if isSunSettingInOrSet(timedelta(hours=1)):
@@ -46,7 +46,7 @@ class Auto():
               logger.debug("sun is not set")
           else:
             logger.debug("message was retained, do not act on it")
-       elif msg.payload == "closed":
+       elif msg.payload == b"closed":
           self.state = False
           if not msg.retain:
             logger.debug("disabling lamp")
