@@ -39,7 +39,7 @@ class Auto():
        if msg.payload == b"open":
           self.state = True
           if not msg.retain:
-            if isSunSettingInOrSet(timedelta(hours=1)):
+            if self.isSunSettingInOrSet(timedelta(hours=1)):
               logger.debug("sun is set, switch on lamp")
               client.publish("/maschinendeck/esper/1bfe7f/socket/set", "1")
             else:
